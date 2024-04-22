@@ -23,6 +23,7 @@ Future<void> cancelAllNotifications(flutterLocalNotificationsPlugin) async {
 Future<void> scheduleNextNotifications(flutterLocalNotificationsPlugin) async {
   await scheduleNextLensNotification(flutterLocalNotificationsPlugin);
   await scheduleNextToothBrushNotification(flutterLocalNotificationsPlugin);
+  await scheduleNextWaterNotification(flutterLocalNotificationsPlugin);
 }
 
 Future<void> scheduleNextLensNotification(flutterLocalNotificationsPlugin) async {
@@ -31,7 +32,7 @@ Future<void> scheduleNextLensNotification(flutterLocalNotificationsPlugin) async
   LensNotification notification = LensNotification(newLenses: newLenses);
 
   // final scheduledDate = inSeconds(5);  // only for debugging
-  final scheduledDate = nextInstanceOf8AM();
+  final scheduledDate = nextInstanceOfHour(8);
   print('Next lens notification: $scheduledDate');
 
   await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
@@ -40,11 +41,22 @@ Future<void> scheduleNextLensNotification(flutterLocalNotificationsPlugin) async
 Future<void> scheduleNextToothBrushNotification(flutterLocalNotificationsPlugin) async {
   ToothBrushNotification notification = ToothBrushNotification();
 
-  // final scheduledDate = inSeconds(5);  // only for debugging
   final scheduledDate = nextInstanceOfSunday8PM();
   print('Next tooth brush notification: $scheduledDate');
 
   await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
+}
+
+Future<void> scheduleNextWaterNotification(flutterLocalNotificationsPlugin) async {
+  WaterNotification notification = WaterNotification();
+  final List<int> hours = [10, 14, 18];
+
+  for (final hour in hours) {
+      final scheduledDate = nextInstanceOfHour(hour);
+      print('Next water notification: $scheduledDate');
+
+      await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
+  }
 }
 
 Future<void> scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate) async {
@@ -143,6 +155,8 @@ class NotificationService {
             key.pushNamed('/lens_notification');
           } else if (notificationResponse.id == 2) {  // tooth brush reminder
             key.pushNamed('/tooth_brush_notification');
+          } else if (notificationResponse.id == 3) {  // water reminder
+            key.pushNamed('/water_notification');
           }
         }
       }

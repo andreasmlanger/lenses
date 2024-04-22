@@ -47,3 +47,11 @@ class ToothBrushNotification {
   late final String payload = 'tooth_brush_notification';
   late final List<AndroidNotificationAction> actions = <AndroidNotificationAction>[];
 }
+
+class WaterNotification {
+  late final int id = 3;
+  late final String title = 'Drink Water';
+  late final String body = 'Drink water now!';
+  late final String payload = 'water_notification';
+  late final List<AndroidNotificationAction> actions = <AndroidNotificationAction>[];
+}

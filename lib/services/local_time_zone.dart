@@ -35,14 +35,14 @@ Future<void> configureLocalTimeZone() async {
   tz.setLocalLocation(tz.getLocation(timeZoneName));
 }
 
-tz.TZDateTime nextInstanceOf8AM() {
+tz.TZDateTime nextInstanceOfHour(hour) {
   final now = getNow();
   final nextInstance = tz.TZDateTime(
     tz.local,
     now.year,
     now.month,
     now.day,
-    8,
+    hour,
     0,
   );
   return nextInstance.isBefore(now) ? nextInstance.add(const Duration(days: 1)) : nextInstance;

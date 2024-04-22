@@ -2,8 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:lenses/services/constants.dart';
 
 
-class ToothBrushNotificationScreen extends StatelessWidget {
-  const ToothBrushNotificationScreen({Key? key}) : super(key: key);
+String getMessage(String notificationType) {
+  if (notificationType == 'tooth-brush') {
+    return 'Brush teeth with Elmex Gelee today!';
+  } else if (notificationType == 'water') {
+    return 'Drink water now!';
+  } else {
+    return '';
+  }
+}
+
+class CustomNotificationScreen extends StatelessWidget {
+  final String notificationType;
+  const CustomNotificationScreen(this.notificationType, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,18 +23,18 @@ class ToothBrushNotificationScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Center(
+            Center(
               child: Padding(
                 padding: EdgeInsets.all(50.0),
                 child: Image(
-                  image: AssetImage('assets/tooth-brush.png'),
+                  image: AssetImage('assets/${notificationType}.png'),
                   width: 200.0,
                   height: 200.0,
                 ),
               ),
             ),
-            const Text(
-                'Brush teeth with Elmex Gelee today!',
+            Text(
+                getMessage(notificationType),
                 style: TextStyle(
                   fontSize: 20,
                 )

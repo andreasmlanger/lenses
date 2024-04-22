@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'screens/home_screen.dart';
 import 'screens/lens_notification_screen.dart';
-import 'screens/tooth_brush_notification_screen.dart';
+import 'screens/custom_notification_screen.dart';
 import 'services/local_notifications.dart';
 import 'services/local_time_zone.dart';
 
@@ -44,7 +44,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => Home(flutterLocalNotificationsPlugin),
         '/lens_notification': (context) => const LensNotificationScreen(),
-        '/tooth_brush_notification': (context) => const ToothBrushNotificationScreen(),
+        '/tooth_brush_notification': (context) => const CustomNotificationScreen('tooth_brush'),
+        '/water_notification': (context) => const CustomNotificationScreen('water'),
       },
     );
   }
