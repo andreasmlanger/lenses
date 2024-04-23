@@ -48,10 +48,10 @@ Future<void> scheduleNextToothBrushNotification(flutterLocalNotificationsPlugin)
 }
 
 Future<void> scheduleNextWaterNotification(flutterLocalNotificationsPlugin) async {
-  WaterNotification notification = WaterNotification();
   final List<int> hours = [10, 14, 18];
 
   for (final hour in hours) {
+      WaterNotification notification = WaterNotification();
       final scheduledDate = nextInstanceOfHour(hour);
       print('Next water notification: $scheduledDate');
 
