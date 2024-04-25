@@ -31,8 +31,8 @@ Future<void> scheduleNextLensNotification(flutterLocalNotificationsPlugin) async
   final bool newLenses = (durations['L']! < 2 || durations['R']! < 2);
   LensNotification notification = LensNotification(newLenses: newLenses);
 
-  // final scheduledDate = inSeconds(5);  // only for debugging
-  final scheduledDate = nextInstanceOfHour(8);
+  // final DateTime scheduledDate = inSeconds(5);  // only for debugging
+  final DateTime scheduledDate = nextInstanceOfHour(8);
   print('Next lens notification: $scheduledDate');
 
   await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
@@ -41,7 +41,7 @@ Future<void> scheduleNextLensNotification(flutterLocalNotificationsPlugin) async
 Future<void> scheduleNextToothBrushNotification(flutterLocalNotificationsPlugin) async {
   ToothBrushNotification notification = ToothBrushNotification();
 
-  final scheduledDate = nextInstanceOfSunday8PM();
+  final DateTime scheduledDate = nextInstanceOfSunday8PM();
   print('Next tooth brush notification: $scheduledDate');
 
   await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
@@ -50,13 +50,13 @@ Future<void> scheduleNextToothBrushNotification(flutterLocalNotificationsPlugin)
 Future<void> scheduleNextWaterNotification(flutterLocalNotificationsPlugin) async {
   final List<int> hours = [10, 14, 18];
 
-  for (final hour in hours) {
-      WaterNotification notification = WaterNotification();
-      final scheduledDate = nextInstanceOfHour(hour);
-      print('Next water notification: $scheduledDate');
+  await Future.forEach(hours, (int hour) async {
+    WaterNotification notification = WaterNotification();
+    DateTime scheduledDate = nextInstanceOfHour(hour);
+    print('Next water notification: $scheduledDate');
 
-      await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
-  }
+    await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
+  });
 }
 
 Future<void> scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate) async {
