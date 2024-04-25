@@ -32,7 +32,8 @@ Future<void> scheduleNextLensNotification(flutterLocalNotificationsPlugin) async
   LensNotification notification = LensNotification(newLenses: newLenses);
 
   // final DateTime scheduledDate = inSeconds(5);  // only for debugging
-  final DateTime scheduledDate = nextInstanceOfHour(8);
+  DateTime scheduledDate = instanceOfHour(8);
+  scheduledDate = isInPast(scheduledDate) ? scheduledDate.add(const Duration(days: 1)) : scheduledDate;
   print('Next lens notification: $scheduledDate');
 
   await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
@@ -49,14 +50,17 @@ Future<void> scheduleNextToothBrushNotification(flutterLocalNotificationsPlugin)
 
 Future<void> scheduleNextWaterNotification(flutterLocalNotificationsPlugin) async {
   final List<int> hours = [10, 14, 18];
+  DateTime scheduledDate = DateTime.now(); // initialize to current time
 
-  await Future.forEach(hours, (int hour) async {
-    WaterNotification notification = WaterNotification();
-    DateTime scheduledDate = nextInstanceOfHour(hour);
-    print('Next water notification: $scheduledDate');
+  for (int hour in hours) {
+    scheduledDate = instanceOfHour(hour);
+    if (!isInPast(scheduledDate)) break;
+    scheduledDate = scheduledDate.add(const Duration(days: 1));
+  }
 
-    await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
-  });
+  WaterNotification notification = WaterNotification();
+  print('Next water notification: $scheduledDate');
+  await scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate);
 }
 
 Future<void> scheduleNextNotification(flutterLocalNotificationsPlugin, notification, scheduledDate) async {
