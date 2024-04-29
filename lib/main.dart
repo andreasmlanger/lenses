@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => Home(flutterLocalNotificationsPlugin),
         '/lens_notification': (context) => const LensNotificationScreen(),
-        '/tooth_brush_notification': (context) => const CustomNotificationScreen('tooth_brush'),
+        '/tooth_brush_notification': (context) => const CustomNotificationScreen('tooth-brush'),
         '/water_notification': (context) => const CustomNotificationScreen('water'),
       },
     );
