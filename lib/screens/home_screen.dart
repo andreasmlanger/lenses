@@ -23,7 +23,6 @@ class Home extends StatefulWidget {
 
 class HomeScreenState extends State<Home> {
   Map<String, int> durations = {'L': 28, 'R': 28};  // initialize
-  bool notificationsEnabled = false;
 
   @override
   void initState() {
@@ -55,7 +54,7 @@ class HomeScreenState extends State<Home> {
             builder: (context, setState) {
               return NumberPicker(
                 value: selectedValue,
-                minValue: 1,
+                minValue: 0,
                 maxValue: 28,
                 onChanged: (value) {
                   setState(() => durations[type] = value);
@@ -71,7 +70,7 @@ class HomeScreenState extends State<Home> {
                   durations[type] = selectedValue;
                 });
                 await saveLensReplacementDate(type, inDays(selectedValue));
-                await updateAllNotifications(notificationsPlugin);
+                await scheduleNextNotifications(notificationsPlugin);
                 Navigator.pop(context);
               },
               child: const Text('OK'),
@@ -84,10 +83,8 @@ class HomeScreenState extends State<Home> {
 
   Future _displayBottomSheet(BuildContext context) async {
     final notificationsPlugin = widget.flutterLocalNotificationsPlugin;
-    final isNotificationEnabled = await isNotificationScheduled(notificationsPlugin);
-    setState(() {
-      notificationsEnabled = isNotificationEnabled;
-    });
+    List<bool> notifications = await loadNotifications();
+    List<String> notificationTitles = ['Lenses', 'Tooth Brush', 'Water'];
     return showModalBottomSheet(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -95,25 +92,32 @@ class HomeScreenState extends State<Home> {
           return Container(
             height: 100,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Switch(
-                  value: notificationsEnabled,
-                  onChanged: (newValue) {
-                    setState(() {
-                      notificationsEnabled = newValue;
-                    });
-                    newValue ? scheduleNextNotifications(notificationsPlugin) : cancelAllNotifications(notificationsPlugin);
-                  },
-                  activeColor: primaryColor,
-                ),
-                SizedBox(width: 20.0),
-                Text(
-                  'Notifications',
-                  style: const TextStyle(
-                    fontSize: 18,
+                for (int i = 0; i < notifications.length; i++)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Switch(
+                        value: notifications[i],
+                        onChanged: (newValue) {
+                          setState(() {
+                            notifications[i] = newValue;
+                          });
+                          saveNotifications(notifications);
+                          scheduleNextNotifications(notificationsPlugin);
+                        },
+                        activeColor: primaryColor,
+                      ),
+                      SizedBox(width: 20.0),
+                      Text(
+                        notificationTitles[i],
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
               ],
             ),
           );
@@ -157,7 +161,7 @@ class HomeScreenState extends State<Home> {
             durations[type] = 28;
           });
           await saveLensReplacementDate(type, inDays(28));
-          await updateAllNotifications(notificationsPlugin);
+          await scheduleNextNotifications(notificationsPlugin);
         },
         icon: const Icon(
           Icons.refresh,
@@ -211,8 +215,8 @@ class HomeScreenState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Image.asset(
-                'assets/contact-lens.png',
-                height: 80.0,
+                'assets/eye.png',
+                height: 60.0,
               ),
               Image.asset(
                 'assets/app_icon.png',
@@ -222,36 +226,34 @@ class HomeScreenState extends State<Home> {
                 alignment: Alignment.center,
                 transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
                 child: Image.asset(
-                  'assets/contact-lens.png',
-                  height: 80.0,
+                  'assets/eye.png',
+                  height: 60.0,
                 ),
               ),
             ],
           ),
-          Center(
-            child: SizedBox(
-              height: 320,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      lensDurationBox('L'),
-                      const SizedBox(height: 25.0),
-                      renewButton('L'),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      lensDurationBox('R'),
-                      const SizedBox(height: 25.0),
-                      renewButton('R'),
-                    ],
-                  ),
-                ],
-              ),
+          SizedBox(
+            height: 320,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    lensDurationBox('L'),
+                    const SizedBox(height: 25.0),
+                    renewButton('L'),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    lensDurationBox('R'),
+                    const SizedBox(height: 25.0),
+                    renewButton('R'),
+                  ],
+                ),
+              ],
             ),
           ),
         ],

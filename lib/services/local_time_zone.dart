@@ -53,6 +53,10 @@ bool isInPast(instance) {
   return instance.isBefore(now);
 }
 
+bool isWeekend(DateTime date) {
+  return date.weekday == DateTime.saturday || date.weekday == DateTime.sunday;
+}
+
 tz.TZDateTime nextInstanceOfSunday8PM() {
   final now = getNow();
   final daysUntilSunday = 7 - now.weekday;
@@ -74,3 +78,19 @@ tz.TZDateTime inSeconds(int seconds) {
   return now.add(Duration(seconds: seconds));
 }
 
+DateTime nextWaterDate() {
+  final List<int> hours = [10, 14, 18];
+  for (int hour in hours) {
+    DateTime scheduledDate = instanceOfHour(hour);
+    if (!isInPast(scheduledDate) && scheduledDate.weekday < 6) {
+      return scheduledDate;
+    }
+  }
+  DateTime scheduledDate = instanceOfHour(hours[0]);
+  scheduledDate = scheduledDate.add(const Duration(days: 1));
+  while (scheduledDate.weekday > 5) {
+    scheduledDate = scheduledDate.add(const Duration(days: 1));  // if weekend, add one day
+  }
+  print(scheduledDate.weekday);
+  return scheduledDate;
+}

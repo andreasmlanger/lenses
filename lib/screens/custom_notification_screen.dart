@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lenses/services/constants.dart';
 
 
@@ -45,12 +46,11 @@ class CustomNotificationScreen extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacementNamed('/');
+                    SystemNavigator.pop(); // close the app
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: accentColor1, // Change the button color here
-                    minimumSize: const Size(120, 80), // Set the button size
+                    backgroundColor: accentColor1,
+                    minimumSize: const Size(120, 80),
                   ),
                   child: const Text(
                     'OK',

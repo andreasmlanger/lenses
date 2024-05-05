@@ -27,3 +27,15 @@ void addOneDay() async {
   await saveLensReplacementDate('L', inDays(lensDurations['L']! + 1));
   await saveLensReplacementDate('R', inDays(lensDurations['R']! + 1));
 }
+
+Future<void> saveNotifications(notifications) async {
+  final prefs = await SharedPreferences.getInstance();
+  for (int i = 0; i < notifications.length; i++)
+    await prefs.setBool(i.toString(), notifications[i]);
+}
+
+Future<List<bool>> loadNotifications() async {
+  final prefs = await SharedPreferences.getInstance();
+  List<bool?> notifications = [prefs.getBool('0'), prefs.getBool('1'), prefs.getBool('2')];
+  return notifications.map((value) => value ?? false).toList();
+}
