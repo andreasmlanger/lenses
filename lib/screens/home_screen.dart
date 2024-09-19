@@ -22,7 +22,7 @@ class Home extends StatefulWidget {
 }
 
 class HomeScreenState extends State<Home> {
-  Map<String, int> durations = {'L': 28, 'R': 28};  // initialize
+  Map<String, int?> durations = {'L': null, 'R': null};  // initialize
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class HomeScreenState extends State<Home> {
   }
 
   void openDurationsSelectorDialog(BuildContext context, String type) {
-    int selectedValue = durations[type]! < 28 ? durations[type]! : 28;
+    int selectedValue = (durations[type] != null && durations[type]! < 28) ? durations[type]! : 28;
     final notificationsPlugin = widget.flutterLocalNotificationsPlugin;
     showDialog(
       context: context,
@@ -54,11 +54,17 @@ class HomeScreenState extends State<Home> {
             builder: (context, setState) {
               return NumberPicker(
                 value: selectedValue,
-                minValue: 0,
+                minValue: -1,
                 maxValue: 28,
                 onChanged: (value) {
-                  setState(() => durations[type] = value);
+                  setState(() => durations[type] = value == -1 ? null : value);
                   selectedValue = value;
+                },
+                textMapper: (numberText) {
+                  if (numberText == '-1') {
+                    return '--';  // map -1 to '--'
+                  }
+                  return numberText;
                 },
               );
             }
@@ -67,9 +73,12 @@ class HomeScreenState extends State<Home> {
             TextButton(
               onPressed: () async {
                 setState(() {
-                  durations[type] = selectedValue;
+                  durations[type] = selectedValue == -1 ? null : selectedValue;
                 });
-                await saveLensReplacementDate(type, inDays(selectedValue));
+                selectedValue == -1
+                  ? await deleteLensReplacementDate(type)
+                  : await saveLensReplacementDate(type, inDays(selectedValue));
+
                 await scheduleNextNotifications(notificationsPlugin);
                 Navigator.pop(context);
               },
@@ -126,6 +135,11 @@ class HomeScreenState extends State<Home> {
     );
   }
 
+  String formatDuration(int? duration) {
+    if (duration == null) return '--';
+    return duration.toString();
+  }
+
   Widget lensDurationBox(String type) {
     return GestureDetector(
       onTap: () {
@@ -140,7 +154,7 @@ class HomeScreenState extends State<Home> {
         ),
         child: Center(
           child: Text(
-            durations[type].toString(),
+            formatDuration(durations[type]),
             style: const TextStyle(
               fontSize: 48,
               color: Colors.white,
@@ -154,7 +168,7 @@ class HomeScreenState extends State<Home> {
 
   Widget renewButton(String type) {
     final notificationsPlugin = widget.flutterLocalNotificationsPlugin;
-    if (durations[type]! < 1) {
+    if (durations[type] == 0) {
       return ElevatedButton.icon(
         onPressed: () async {
           setState(() {
@@ -214,21 +228,21 @@ class HomeScreenState extends State<Home> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Image.asset(
-                'assets/eye.png',
-                height: 60.0,
+              Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                child: Image.asset(
+                  'assets/contact-lens.png',
+                  height: 40.0,
+                ),
               ),
               Image.asset(
                 'assets/app_icon.png',
                 height: 120.0,
               ),
-              Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
-                child: Image.asset(
-                  'assets/eye.png',
-                  height: 60.0,
-                ),
+              Image.asset(
+                'assets/contact-lens.png',
+                height: 40.0,
               ),
             ],
           ),

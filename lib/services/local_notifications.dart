@@ -36,10 +36,10 @@ Future<void> scheduleNextNotifications(notificationsPlugin) async {
 
 Future<void> scheduleNextLensNotification(notificationsPlugin) async {
   final durations = await loadLensDurations();
-  final bool newLenses = (durations['L']! < 2 || durations['R']! < 2);
+  final bool newLenses = ((durations['L'] != null && durations['L']! < 2) || (durations['R'] != null && durations['R']! < 2));
   LensNotification notification = LensNotification(newLenses: newLenses);
 
-  // final DateTime scheduledDate = inSeconds(5);  // only for debugging
+  // DateTime scheduledDate = inSeconds(10);  // only for debugging
   DateTime scheduledDate = instanceOfHour(8);
   scheduledDate = isInPast(scheduledDate) ? scheduledDate.add(const Duration(days: 1)) : scheduledDate;
   print('Next lens notification: $scheduledDate');

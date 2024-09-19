@@ -9,15 +9,20 @@ Future<void> saveLensReplacementDate(String type, DateTime date) async {
   print('$type: $dateString');
 }
 
-Future<Map<String, int>> loadLensDurations() async {
+Future<void> deleteLensReplacementDate(String type) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove(type);
+}
+
+Future<Map<String, int?>> loadLensDurations() async {
   final DateTime now = getToday();
 
   final prefs = await SharedPreferences.getInstance();
   final String? dateStringL = prefs.getString('L');
   final String? dateStringR = prefs.getString('R');
 
-  final durationL = dateStringL != null ? calculateDaysBetween(now, DateTime.parse(dateStringL)) : 28;
-  final durationR = dateStringR != null ? calculateDaysBetween(now, DateTime.parse(dateStringR)) : 28;
+  final durationL = dateStringL != null ? calculateDaysBetween(now, DateTime.parse(dateStringL)) : null;
+  final durationR = dateStringR != null ? calculateDaysBetween(now, DateTime.parse(dateStringR)) : null;
 
   return {'L': durationL, 'R': durationR};
 }
